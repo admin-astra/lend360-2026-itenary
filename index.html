@@ -34,6 +34,8 @@
   --warn: #8F5400;    --warn-bg: #FBEED6;
   --focus: #2C57A3;
   --shadow: 0 1px 2px rgba(11, 42, 74, .06), 0 6px 18px rgba(11, 42, 74, .07);
+  --prio-green: #6AA84F;
+  --prio-yellow: #F1C232;
 
   --f-display: "Outfit", "Segoe UI", system-ui, sans-serif;
   --f-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -294,7 +296,12 @@ main { padding-block: 18px 40px; }
 .chip.rakesh { color: var(--rakesh); background: var(--rakesh-bg); }
 .chip.mickey { color: var(--mickey); background: var(--mickey-bg); }
 .chip.outlook { color: var(--outlook); background: var(--outlook-bg); }
-.chip.brella-pend { color: var(--muted); background: var(--surface-2); }
+.chip.prio-high { color: var(--ok); background: var(--ok-bg); }
+.chip.prio-std { color: var(--warn); background: var(--warn-bg); }
+.pdot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex: none; }
+.prio-mark { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; vertical-align: .05em; }
+.prio-mark.high { background: var(--prio-green); }
+.prio-mark.std { background: var(--prio-yellow); }
 .chip.table { color: var(--ink); background: transparent; border: 1px solid var(--line); font-family: var(--f-mono); font-weight: 500; }
 
 .quote {
@@ -478,6 +485,8 @@ footer .wrap { display: grid; gap: 6px; }
 
 <main class="wrap">
   <div class="filters">
+    <span class="filter-label" id="prioLabel">Priority</span>
+    <div class="chipset" role="group" aria-labelledby="prioLabel" id="prioFilters"></div>
     <span class="filter-label" id="viaLabel">Booked via</span>
     <div class="chipset" role="group" aria-labelledby="viaLabel" id="viaFilters"></div>
     <label class="toggle" for="showOfficial">
@@ -514,7 +523,11 @@ footer .wrap { display: grid; gap: 6px; }
         <span class="chip rakesh">Rakesh's Brella</span>
         <span class="chip mickey">Mickey's Brella</span>
         <span class="chip outlook">Outlook invite</span>
-        <span class="chip brella-pend">Brella request pending</span>
+      </div>
+      <p class="label" style="margin-top:8px">Priority (row colour in our sheet)</p>
+      <div class="legend">
+        <span class="chip prio-high"><span class="pdot"></span>Green · high potential client</span>
+        <span class="chip prio-std"><span class="pdot"></span>Yellow · lower potential, still meeting</span>
       </div>
     </div>
     <div class="panel">
@@ -530,7 +543,7 @@ footer .wrap { display: grid; gap: 6px; }
 
 <footer>
   <div class="wrap">
-    <p>Meetings and attendee details come from the “Meetings set”, “Companies” and “People - Main” tabs of the LEND360 worksheet (pulled Oct 9, 2026). Company one-pagers draw on company websites, LinkedIn and press coverage; size figures are LinkedIn ranges or third-party estimates.</p>
+    <p>Meetings and attendee details come from the “Meetings set”, “Companies” and “People - Main” tabs of the LEND360 worksheet (updated Oct 10, 2026). Green and yellow priority follow the row colours in the Meetings set tab; pending and declined requests are left out. Company one-pagers draw on company websites, LinkedIn and press coverage; size figures are LinkedIn ranges or third-party estimates.</p>
     <p>Official session times are from the LEND360 2026 agenda and can change. Check the <a href="https://www.lend360.org/2026-agenda" target="_blank" rel="noopener">official schedule</a> on site.</p>
   </div>
 </footer>
@@ -544,30 +557,38 @@ footer .wrap { display: grid; gap: 6px; }
   var lip = function (q) { return "https://www.linkedin.com/search/results/people/?keywords=" + encodeURIComponent(q); };
 
   var COMPANIES = {
-    dcm: {
-      name: "DCM Services",
-      industry: "Collections · estate & specialty account resolution",
-      size: "501–1,000 employees (LinkedIn)",
-      hq: "Bloomington (Minneapolis), Minnesota",
-      founded: "2006",
-      website: "dcmservices.com",
-      linkedin: li("DCM Services"),
-      about: "A Minneapolis-area collection agency that specializes in estate and specialty account resolution for financial services, healthcare, retail, telecom and auto lending creditors. It is BBB-accredited (A+), led by CEO Mike Rosenthal, and recently added estate-recovery partnerships with AKUVO and CGI. It also carries a notable CFPB complaint history.",
+    island: {
+      name: "Island Mountain Development Group",
+      industry: "Tribal lending · online consumer loans",
+      size: "51–200 employees (LinkedIn)",
+      hq: "Hays, Montana (Fort Belknap Reservation)",
+      founded: "2009, by the Fort Belknap Indian Community Council",
+      revenue: "About $130M operating revenue (2020 estimate, reported in 2023); data vendors list about $18M",
+      priority: "std",
+      website: "islandmtn.com",
+      linkedin: li("Island Mountain Development Group"),
+      about: "The for-profit economic development corporation of the Fort Belknap Indian Community (Aaniiih and Nakoda tribes) in Montana. More than 90% of its revenue comes from three online lending brands: Bright Lending, Green Trust Cash and Target Cash Now. It faces multistate legal scrutiny, including a Minnesota AG lawsuit, over APRs reported at 474%–795% and over its sovereign-immunity status.",
       does: [
-        "Estate and probate recovery on deceased-account balances",
-        "Specialty account resolution for creditors in financial services, healthcare, retail, telecom and auto",
-        "Recent partnerships: AKUVO (estate recovery) and CGI (probate recovery)"
+        "Online consumer lending through Bright Lending, Green Trust Cash and Target Cash Now",
+        "Economic development and ancillary businesses for the Fort Belknap community",
+        "Leadership based in Hays and Billings, Montana"
       ],
-      fit: { level: "medium", label: "Medium fit", text: "DCM is a collections agency itself, so treat it as a subcontracting or referral partner rather than a direct buyer. Possible fit for dialer/WFM or white-labelled back-office overflow during volume spikes." },
+      fit: { text: "Three consumer lending brands with a CEO, Chief of Lending Operations and CHRO attending suggests real loan volume needing underwriting, collections and dialer/WFM support. Their legal pressure makes ISO 27001 / PCI DSS certification and paralegal / e-OSCAR dispute handling relevant." },
       plan: [
-        ["Before", "Two business development leaders are attending. Approach DCM as a capacity or channel partner, not an end client."],
-        ["During", "Ask the VP of Business Development about subcontracting or referral arrangements for overflow volume."],
-        ["After", "Send a partnership proposal on how Astra's dialer management and WFM can extend DCM's capacity."]
+        ["Before", "Pitch the Chief of Lending Operations on collections, dialer and WFM savings, and the CHRO on scaling without onshore hiring."],
+        ["During", "Ask for time with the CEO or the board member, and stress compliance certifications given the legal scrutiny."],
+        ["After", "Propose a paralegal / e-OSCAR dispute-handling pilot alongside core collections outsourcing."]
       ],
       people: [
-        { n: "Melanie Ellston", t: "Business Development Manager", e: "melanie.ellston@dcmservices.com", p: "+16122438542", poc: true },
-        { n: "Todd Volkers", t: "Vice President of Business Development", e: "todd.volkers@dcmservices.com", p: "+16128125986" }
-      ]
+        { n: "Douglas Stuart", t: "Board Member", e: "rona.wing@islandmtn.com", p: "+14068612063", poc: true },
+        { n: "Taylor McCabe", t: "CEO", e: null, p: null },
+        { n: "Edward Moore", t: "Chief Operating Officer", e: "eddie.moore@islandmtn.com", p: "+14068612063" },
+        { n: "Brandi Horn", t: "Chief of Lending Operations", e: null, p: null },
+        { n: "Richard Fox", t: "Chief Human Resources Officer", e: "richard.fox@islandmtn.com", p: "+14066733031" },
+        { n: "David Spych", t: "Director of Risk and Underwriting", e: "david.spych@islandmtn.com", p: "+16787729802" },
+        { n: "Christina Flansburg", t: "Leads Analysis", e: "christina.flansburg@islandmtn.com", p: "+14066802525" }
+      ],
+      peopleNote: "The email on file for Douglas (rona.wing@islandmtn.com) is likely an assistant's inbox. Edward, David and Christina come from the New Attendee List tab."
     },
     midwest: {
       name: "Midwest Fidelity Services, LLC",
@@ -575,6 +596,8 @@ footer .wrap { display: grid; gap: 6px; }
       size: "11–50 employees (LinkedIn) · about 12 staff",
       hq: "Ottawa, Kansas",
       founded: "2012",
+      revenue: "About $5M (third-party estimate)",
+      priority: "high",
       website: "midwestfidelity.com",
       linkedin: li("Midwest Fidelity Services"),
       about: "A small, BBB-accredited (A+) collection agency in Ottawa, Kansas, run by President/CEO Mike Powell, who co-founded it in 2012. It recovers debt for fintech lenders, auto lenders, banks, and personal-finance and medical clients, and markets itself as AI-assisted recovery with a human touch.",
@@ -596,64 +619,14 @@ footer .wrap { display: grid; gap: 6px; }
         { n: "Laura Gomez", t: "Director of Operations", e: "lgomez@midwestfidelity.com", p: "+17854183704" }
       ]
     },
-    fairsquare: {
-      name: "FairSquare",
-      industry: "Small-business lending · fintech holding company",
-      size: "201–500 employees (LinkedIn)",
-      hq: "San Diego, California",
-      founded: "2024 (National Funding, its anchor brand, since 1999)",
-      website: "fairsquare.com",
-      linkedin: li("FairSquare"),
-      about: "A holding company launched in October 2024 by Dave Gilbert, who founded National Funding in 1999 with a $10,000 loan. It unites National Funding, QuickBridge, SmallBusinessLoans.com and Finova Capital to offer working capital loans, equipment financing and merchant cash advances to small businesses.",
-      does: [
-        "Brands: National Funding, QuickBridge, SmallBusinessLoans.com, Finova Capital",
-        "Working capital loans, equipment financing and merchant cash advances",
-        "High application volume across several origination channels"
-      ],
-      fit: { level: "high", label: "High fit", text: "A multi-brand SMB lender with heavy application volume fits loan processing, underwriting & QA, warm transfer / clicker services for lead conversion, and collections across the portfolio." },
-      plan: [
-        ["Before", "Chris runs CX, marketing, brand and product. Prep a pitch on how warm transfer / clicker and voice & accent modulation lift call quality across the brands."],
-        ["During", "Frame the conversation around CX metrics, not just cost."],
-        ["After", "Propose a warm-transfer / clicker CX pilot on one FairSquare brand."]
-      ],
-      spot: "Tue 9:00–10:00 AM · Marigold (4th floor): Chris Panebianco speaks on the panel “Personalizing the SMB Lending Experience – Cultivating Stronger Customer Relationships”.",
-      people: [
-        { n: "Chris Panebianco", t: "Chief Customer Officer", e: "cpanebianco@fairsquare.com", p: "+13154617856", poc: true }
-      ]
-    },
-    paymentvision: {
-      name: "PaymentVision",
-      legal: "A division of Autoscribe Corporation",
-      industry: "Payments technology · PCI-certified payment gateway",
-      size: "51–200 employees (LinkedIn); databases estimate 15–20 staff",
-      hq: "Jacksonville, Florida",
-      founded: "1988",
-      website: "paymentvision.com",
-      linkedin: li("PaymentVision"),
-      about: "A biller-direct electronic payment gateway, now a division of Autoscribe. It connects to the ACH and card networks so billers can take payments by phone, web, IVR, text, agent or walk-in. It reports 2,000+ customers and about $2 billion processed a year, and was named a top electronic payment solution by Collection Advisor magazine.",
-      does: [
-        "Payment channels: PayLink, PayAPI, PayAgent, PayIVR, PayWeb360, Pay by Text, Walk-In Payment",
-        "Security: TokenGuard tokenization, hosted tokenization and risk management",
-        "Collections tools: convenience fees, settlement offers, flexible settlements; integrates with AR platforms like CLS, Q-Law, Columbia Ultimate and Shaw Systems",
-        "Markets: collection agencies and law firms, consumer and auto finance, banks and credit unions, healthcare, government and utilities"
-      ],
-      fit: { level: "partner", label: "Partner angle", note: "Our suggestion", text: "Their customers are the same collection agencies and lenders Astra sells to. Explore referrals or co-selling (payments plus collections operations), and whether their own client support or onboarding needs back-office help." },
-      plan: [
-        ["Before", "Matt leads growth, so frame this as a partnership conversation rather than a vendor pitch."],
-        ["During", "Ask which of their clients struggle with agent capacity or payment-call volume, and where Astra could support them."],
-        ["After", "Follow up with a short referral / co-marketing outline and a joint one-page offer."]
-      ],
-      people: [
-        { n: "Matt Marderness", t: "Chief Growth Officer", e: "mmarderness@paymentvision.com", p: null, poc: true }
-      ],
-      peopleNote: "Matt isn't on our attendee tabs; title and email are from public directories (ZoomInfo, AFSA)."
-    },
     becket: {
       name: "Becket & Lee LLP",
       industry: "Legal services · creditor bankruptcy servicing",
       size: "51–200 employees (LinkedIn) · 175+ staff",
       hq: "Malvern, Pennsylvania",
       founded: "1984",
+      revenue: "Estimates range from about $25M to $96M (third-party)",
+      priority: "std",
       website: "becket-lee.com",
       linkedin: li("Becket & Lee LLP"),
       about: "A law firm founded in 1984 that focuses only on nationwide bankruptcy account management and litigation for creditors such as banks, auto, retail and fintech lenders, and debt purchasers. It does not buy debt or sell data.",
@@ -678,6 +651,8 @@ footer .wrap { display: grid; gap: 6px; }
       size: "51–200 employees (LinkedIn) · about $29.8M revenue (reported)",
       hq: "Oceanside, California",
       founded: "1990",
+      revenue: "About $29.8M (reported)",
+      priority: "high",
       website: "montereyfinancial.com",
       linkedin: li("Monterey Financial Services"),
       about: "A specialty finance and receivables management company that marked its 35th year in 2025. It runs consumer financing programs for merchants (including subprime borrowers), services purchased receivables, and operates in-house third-party collections by phone, letter and email.",
@@ -704,6 +679,8 @@ footer .wrap { display: grid; gap: 6px; }
       size: "11–50 employees (LinkedIn)",
       hq: "Boca Raton, Florida",
       founded: "2012",
+      revenue: "Not disclosed (private, 11–50 staff)",
+      priority: "std",
       website: "everchain.com",
       linkedin: li("EverChain"),
       about: "A debt-sale marketplace and compliance platform that connects creditors with a certified network of debt buyers and collection agencies. It is a facilitator, not a lender, and one of the largest exchanges of its kind. In February 2026 a $1.2 billion consumer debt portfolio sold on the EverChain Exchange.",
@@ -732,6 +709,8 @@ footer .wrap { display: grid; gap: 6px; }
       size: "51–200 employees (LinkedIn); estimates put staff near 35",
       hq: "Tampa, Florida",
       founded: "2008",
+      revenue: "About $8.3M (third-party estimate)",
+      priority: "high",
       website: "uownleasing.com",
       linkedin: li("Uown Leasing"),
       about: "A lease-to-own provider for credit-challenged shoppers buying furniture, appliances, bedding and other durable goods through 450+ retail partners. It was acquired by 777 Partners in 2020 and merged onto Mollie Financial's platform, and in January 2026 it bought Kornerstone Living's assets under CEO Daniel Klein.",
@@ -757,6 +736,8 @@ footer .wrap { display: grid; gap: 6px; }
       size: "11–50 employees (LinkedIn)",
       hq: "Carmel, Indiana",
       founded: "2009 (founder Kristofer Lyon; CEO Matt Marietta)",
+      revenue: "Not disclosed (private); platform handles about $10B in transactions a year",
+      priority: "high",
       website: "carmelsolutions.com",
       linkedin: li("Carmel Solutions"),
       about: "Carmel builds what it calls “Trust Tech”: servicing, payments, treasury and independent-agency infrastructure that sits between originators, banks and capital providers. It reports $35B+ trusted to its platform, about $10B in annual transactions, 50+ institutional investors protected and 25 million obligors across active portfolios.",
@@ -769,8 +750,8 @@ footer .wrap { display: grid; gap: 6px; }
       fit: { level: "partner", label: "Partner angle", note: "Our suggestion", text: "Servicing and backup servicing across 25 million obligors means real contact-center, collections and data-verification work. Carmel also sees which originators need servicing help, which makes it a strong referral partner." },
       plan: [
         ["Before", "Eric is CRO and posts often on ABS, backup servicing and fintech capital markets. Skim his recent LinkedIn posts."],
-        ["Tue eve", "Keep the drinks relationship-first; save the detailed pitch for Wednesday."],
-        ["Wed", "At the 10:40 AM meeting (Table 2), explore Astra as the operations layer behind Carmel's servicing and a referral path to their originator clients."]
+        ["During", "Keep the drinks relationship-first and learn where their servicing operations feel stretched."],
+        ["After", "Follow up on Astra as the operations layer behind Carmel's servicing, and a referral path to their originator clients."]
       ],
       people: [
         { n: "Eric Johnson", t: "Chief Revenue Officer", e: null, p: null, poc: true, li: lip("Eric Johnson Carmel Chief Revenue Officer") }
@@ -787,15 +768,20 @@ footer .wrap { display: grid; gap: 6px; }
   var VIA = {
     rakesh:  { label: "Rakesh's Brella", cls: "rakesh" },
     mickey:  { label: "Mickey's Brella", cls: "mickey" },
-    outlook: { label: "Outlook invite", cls: "outlook" },
-    pending: { label: "Brella request pending", cls: "brella-pend" }
+    outlook: { label: "Outlook invite", cls: "outlook" }
+  };
+
+  var PRIORITY = {
+    high: { label: "High potential", cls: "prio-high" },
+    std:  { label: "Lower potential", cls: "prio-std" }
   };
 
   var ITEMS = [
     /* Monday */
     { id: "mon-reg", day: "mon", kind: "official", start: "07:30", end: "18:00", ambient: true, title: "Registration desk open", room: "North Foyer · 5th floor" },
-    { id: "dcm", day: "mon", kind: "meeting", status: "pending", start: "09:00", end: "09:30", co: "dcm", via: ["pending"],
-      notes: ["Meeting request sent on Brella. Not accepted yet, so treat this slot as tentative."] },
+    { id: "island", day: "mon", kind: "meeting", status: "confirmed", start: "08:00", end: "08:30", co: "island", via: ["mickey"], table: "2",
+      notes: ["Set on Brella through Mickey's account; Douglas accepted the meeting request.", "First meeting of the conference, before the formal program starts."],
+      source: "Cold-calling campaign · Debbie" },
     { id: "mon-ceo", day: "mon", kind: "official", start: "11:00", end: "12:45", onSheet: true, title: "CEO Reception & Luncheon", sub: "Invite only, for CEOs and Presidents. Speaker: Karl Rove.", room: "Park View · 7th floor" },
     { id: "midwest", day: "mon", kind: "meeting", status: "confirmed", start: "13:00", end: "13:30", co: "midwest", via: ["outlook"],
       notes: ["Calendar invite sent on Outlook and accepted.", "Troy wasn't found on Brella; a Brella meeting request was also sent. No Brella table, so confirm the meeting spot with Troy."],
@@ -803,15 +789,10 @@ footer .wrap { display: grid; gap: 6px; }
     { id: "mon-key", day: "mon", kind: "official", start: "13:00", end: "13:45", title: "Opening remarks & keynote", sub: "Naftali Harris, CEO of SentiLink, on fighting fraud.", room: "Manchester Ballroom EF · 5th floor" },
     { id: "mon-hall", day: "mon", kind: "official", start: "13:00", end: "18:00", ambient: true, title: "Innovation Hall opens", sub: "Exhibit floor, coffee bar, cornhole, puppy play pen.", room: "Manchester Ballroom ABCD · 5th floor" },
     { id: "mon-brk", day: "mon", kind: "official", start: "14:00", end: "15:00", related: "monterey", title: "Breakout: Future-Proofing Lending", sub: "Monterey Financial's Head of Credit, Zhiyao Pei, is on the panel.", room: "Lantana · 4th floor" },
-    { id: "fairsquare", day: "mon", kind: "meeting", status: "pending", start: "15:00", end: "15:30", co: "fairsquare", via: ["pending"],
-      notes: ["Meeting request sent on Brella. Not accepted yet, so treat this slot as tentative.", "Chris also speaks Tuesday 9:00 AM in Marigold (4th floor), a second chance to connect."] },
     { id: "mon-rec", day: "mon", kind: "official", start: "16:30", end: "18:00", title: "Beyond Austin City Limits Reception", sub: "Live music, local food and custom cowboy hats.", room: "Manchester Ballroom ABCD · 5th floor" },
 
     /* Tuesday */
     { id: "tue-bfast", day: "tue", kind: "official", start: "08:00", end: "09:00", title: "Taco Tuesday Breakfast", room: "Manchester Ballroom ABCD · 5th floor" },
-    { id: "tue-brk", day: "tue", kind: "official", start: "09:00", end: "10:00", related: "fairsquare", title: "Breakout: Personalizing the SMB Lending Experience", sub: "FairSquare's Chris Panebianco is on the panel.", room: "Marigold · 4th floor" },
-    { id: "paymentvision", day: "tue", kind: "meeting", status: "confirmed", start: "09:20", end: "09:40", co: "paymentvision", via: ["rakesh"], table: "3",
-      notes: ["Set on Brella through Rakesh's account."], source: "LinkedIn campaign · Debbie & Arsh" },
     { id: "tue-key1", day: "tue", kind: "official", start: "11:45", end: "12:15", title: "Keynote: the future of bank–fintech partnerships", sub: "Sherrie Rees (First Electronic Bank) and Jer Wood (Block).", room: "Manchester Ballroom EF · 5th floor" },
     { id: "tue-lunch", day: "tue", kind: "official", start: "12:30", end: "14:00", title: "Texas BBQ Networking Lunch", room: "Manchester Ballroom ABCD · 5th floor" },
     { id: "becket", day: "tue", kind: "meeting", status: "confirmed", start: "13:20", end: "13:40", co: "becket", via: ["mickey"], table: "3",
@@ -826,12 +807,11 @@ footer .wrap { display: grid; gap: 6px; }
     { id: "tue-rec", day: "tue", kind: "official", start: "16:30", end: "18:00", title: "Austin Brews & Views Reception", sub: "Craft beer, cocktails and skyline views to close Day 2.", room: "Palm Court · 7th floor" },
     { id: "carmel", day: "tue", kind: "meeting", status: "social", start: "18:30", end: "21:00", timeLabel: "Evening", co: "carmel", via: ["mickey", "rakesh"], host: "mickey",
       quote: "Mickey will have a drink with them in the evening.",
-      notes: ["Formal Brella meeting is on Wednesday, Oct 14, 10:40–11:00 AM CT at Table 2, booked through Rakesh's account."],
       source: "LinkedIn campaign · Debbie & Arsh" }
   ];
 
   var DAY_NOTES = {
-    mon: "The formal program starts at 1:00 PM. Two Brella requests (DCM Services and FairSquare) are still pending, so those slots are tentative.",
+    mon: "Early start: Island Mountain at 8:00 AM, Table 2. The formal program begins at 1:00 PM, and Midwest Fidelity is at the same time.",
     tue: "2:40–3:40 PM is three meetings back to back: Monterey at Table 1, EverChain at Table 2, then Uown back at Table 1. End with drinks with Carmel in the evening."
   };
 
@@ -879,8 +859,9 @@ footer .wrap { display: grid; gap: 6px; }
   function daysBetween(a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); }
 
   /* ---------------- State ---------------- */
-  var state = { day: "mon", via: "all", official: true };
-  var savedDay = store("l360-day"), savedVia = store("l360-via"), savedOff = store("l360-official");
+  var state = { day: "mon", via: "all", prio: "all", official: true };
+  var savedDay = store("l360-day"), savedVia = store("l360-via"), savedOff = store("l360-official"), savedPrio = store("l360-prio");
+  if (savedPrio === "high" || savedPrio === "std") state.prio = savedPrio;
   var hash = (location.hash || "").replace("#", "");
   var ct = nowCT();
   if (DAYS[hash]) state.day = hash;
@@ -902,10 +883,8 @@ footer .wrap { display: grid; gap: 6px; }
     elTabs.innerHTML = Object.keys(DAYS).map(function (k) {
       var d = DAYS[k], ms = meetingsFor(k);
       var conf = ms.filter(function (m) { return m.status === "confirmed"; }).length;
-      var pend = ms.filter(function (m) { return m.status === "pending"; }).length;
       var soc = ms.filter(function (m) { return m.status === "social"; }).length;
       var bits = [conf + (conf === 1 ? " meeting" : " meetings")];
-      if (pend) bits.push(pend + " pending");
       if (soc) bits.push("drinks with Carmel");
       return '<button class="tab" role="tab" type="button" id="tab-' + k + '" aria-controls="timeline" aria-selected="' + (state.day === k) + '" data-day="' + k + '">' +
         '<span class="d1">' + d.name + ' <span>' + d.label + '</span></span>' +
@@ -913,11 +892,17 @@ footer .wrap { display: grid; gap: 6px; }
     }).join("");
   }
 
+  var elPrio = document.getElementById("prioFilters");
   function renderVia() {
     var opts = [["all", "All", null]].concat(Object.keys(VIA).map(function (k) { return [k, VIA[k].label, VIA[k].cls]; }));
     elVia.innerHTML = opts.map(function (o) {
-      var sw = o[2] ? '<span class="sw" style="background:var(--' + (o[2] === "brella-pend" ? "warn" : o[2]) + ')"></span>' : "";
+      var sw = o[2] ? '<span class="sw" style="background:var(--' + o[2] + ')"></span>' : "";
       return '<button class="fchip" type="button" aria-pressed="' + (state.via === o[0]) + '" data-via="' + o[0] + '">' + sw + esc(o[1]) + '</button>';
+    }).join("");
+    var popts = [["all", "All", null], ["high", "Green · high potential", "prio-green"], ["std", "Yellow · lower potential", "prio-yellow"]];
+    elPrio.innerHTML = popts.map(function (o) {
+      var sw = o[2] ? '<span class="sw" style="background:var(--' + o[2] + ')"></span>' : "";
+      return '<button class="fchip" type="button" aria-pressed="' + (state.prio === o[0]) + '" data-prio="' + o[0] + '">' + sw + esc(o[1]) + '</button>';
     }).join("");
     elOfficial.checked = state.official;
   }
@@ -943,6 +928,7 @@ footer .wrap { display: grid; gap: 6px; }
       ["Company size", esc(c.size)],
       ["Headquarters", esc(c.hq)],
       ["Founded", esc(c.founded)],
+      ["Revenue", esc(c.revenue || "Not disclosed")],
       ["Website", '<a href="https://www.' + esc(c.website) + '" target="_blank" rel="noopener">' + esc(c.website) + ' ↗</a>'],
       ["LinkedIn", '<a href="' + esc(c.linkedin) + '" target="_blank" rel="noopener">Company page ↗</a>']
     ];
@@ -957,8 +943,8 @@ footer .wrap { display: grid; gap: 6px; }
         '<div><h4>About</h4><p class="about">' + esc(c.about) + '</p></div>' +
         '<div class="op-cols">' +
           '<section><h4>What they do</h4><ul class="does">' + c.does.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join("") + '</ul></section>' +
-          '<section><h4>Why Astra fits <span class="fit ' + c.fit.level + '">' + esc(c.fit.label) + '</span>' +
-            (c.fit.note ? '<span class="fit-note">' + esc(c.fit.note) + '</span>' : '') + '</h4>' +
+          '<section><h4>Astra angle' +
+            (c.fit.note ? ' <span class="fit-note">' + esc(c.fit.note) + '</span>' : '') + '</h4>' +
             '<p class="fit-text">' + esc(c.fit.text) + '</p></section>' +
         '</div>' +
         '<div><h4>Game plan</h4><ol class="plan">' + c.plan.map(function (p) { return '<li><b>' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span></li>'; }).join("") + '</ol></div>' +
@@ -970,8 +956,8 @@ footer .wrap { display: grid; gap: 6px; }
     var c = COMPANIES[i.co];
     var poc = c.people.filter(function (p) { return p.poc; })[0];
     var chips = [];
-    if (i.status === "confirmed") chips.push('<span class="chip ok">' + icon("i-check") + 'Confirmed</span>');
-    if (i.status === "pending") chips.push('<span class="chip pending">Pending</span>');
+    var pr = PRIORITY[c.priority];
+    chips.push('<span class="chip ' + pr.cls + '"><span class="pdot"></span>' + pr.label + '</span>');
     if (i.status === "social") chips.push('<span class="chip social">' + icon("i-glass") + 'Evening drinks</span>');
     if (i.host) chips.push('<span class="chip ' + VIA[i.host].cls + '">Host: Mickey</span>');
     else i.via.forEach(function (v) { chips.push('<span class="chip ' + VIA[v].cls + '">' + esc(VIA[v].label) + '</span>'); });
@@ -998,7 +984,7 @@ footer .wrap { display: grid; gap: 6px; }
       '<div class="time">' + time + flags.marker + (flags.b2b ? '<span class="marker b2b">Back-to-back</span>' : '') + '</div>' +
       '<article class="card" aria-labelledby="h-' + i.id + '">' +
         '<header class="card-head"><div class="head-main">' +
-          '<h3 id="h-' + i.id + '">' + esc(c.name) + '</h3>' +
+          '<h3 id="h-' + i.id + '"><span class="prio-mark ' + c.priority + '" title="' + pr.label + '"></span>' + esc(c.name) + '</h3>' +
           (c.legal ? '<p class="legal">' + esc(c.legal) + '</p>' : '') +
           '<p class="poc">With <strong>' + esc(poc.n) + '</strong> · ' + esc(poc.t) + '</p>' +
         '</div><div class="chips">' + chips.join("") + '</div></header>' +
@@ -1042,10 +1028,11 @@ footer .wrap { display: grid; gap: 6px; }
     document.getElementById("dayTitle").textContent = d.name + ", " + d.label;
     var ms = meetingsFor(state.day);
     var conf = ms.filter(function (m) { return m.status === "confirmed"; }).length;
-    var pend = ms.filter(function (m) { return m.status === "pending"; }).length;
+    var g = ms.filter(function (m) { return COMPANIES[m.co].priority === "high"; }).length;
+    var y = ms.length - g;
     var parts = [conf + " confirmed"];
-    if (pend) parts.push(pend + " pending");
     if (ms.some(function (m) { return m.status === "social"; })) parts.push("drinks with Carmel");
+    parts.push(g + " green, " + y + " yellow");
     document.getElementById("daySum").textContent = parts.join(" · ") + " · times in CT";
     var note = DAY_NOTES[state.day];
     document.getElementById("dayCallout").hidden = !note;
@@ -1060,7 +1047,8 @@ footer .wrap { display: grid; gap: 6px; }
       if (i.kind === "meeting") {
         if (prevMeeting && prevMeeting.end === i.start) flags.b2b = true;
         prevMeeting = i;
-        var show = state.via === "all" || i.via.indexOf(state.via) !== -1 || i.host === state.via;
+        var show = (state.via === "all" || i.via.indexOf(state.via) !== -1 || i.host === state.via) &&
+          (state.prio === "all" || COMPANIES[i.co].priority === state.prio);
         return show ? meetingHTML(i, flags) : "";
       }
       return state.official ? officialHTML(i, flags) : "";
@@ -1077,11 +1065,11 @@ footer .wrap { display: grid; gap: 6px; }
     document.getElementById("clock").textContent = "Austin " + fmt(t.hm);
     var all = ITEMS.filter(function (i) { return i.kind === "meeting"; });
     var conf = all.filter(function (m) { return m.status === "confirmed"; }).length;
-    var pend = all.filter(function (m) { return m.status === "pending"; }).length;
+    var green = all.filter(function (m) { return COMPANIES[m.co].priority === "high"; }).length;
     if (t.date < DAYS.mon.date) {
       var n = daysBetween(t.date, DAYS.mon.date);
       main.textContent = "LEND360 starts Monday, Oct 12 · " + (n === 1 ? "tomorrow" : n + " days to go");
-      sub.textContent = conf + " confirmed meetings, drinks with Carmel, and " + pend + " Brella requests still pending. First confirmed meeting: Midwest Fidelity, Mon 1:00 PM.";
+      sub.textContent = conf + " confirmed meetings plus drinks with Carmel (" + green + " high-potential). First up: Island Mountain, Mon 8:00 AM, Table 2.";
     } else if (t.date === DAYS.mon.date || t.date === DAYS.tue.date) {
       var dk = t.date === DAYS.mon.date ? "mon" : "tue";
       var nn = nowNext(dk);
@@ -1094,11 +1082,11 @@ footer .wrap { display: grid; gap: 6px; }
         var when = nextMeeting.timeLabel ? "this evening" : fmt(nextMeeting.start) + (gap < 120 ? " (in " + gap + " min)" : "");
         sub.textContent = "Next meeting: " + label(nextMeeting) + " · " + when + (nextMeeting.table ? " · Table " + nextMeeting.table : "");
       } else {
-        sub.textContent = dk === "mon" ? "Tomorrow starts with PaymentVision at 9:20 AM, Table 3." : "Wednesday: Carmel meeting at 10:40 AM, Table 2.";
+        sub.textContent = dk === "mon" ? "Tomorrow's first meeting: Becket & Lee at 1:20 PM, Table 3." : "That's all the Monday and Tuesday meetings.";
       }
     } else if (t.date === "2026-10-14") {
       main.textContent = "Wednesday, Oct 14 · last morning";
-      sub.textContent = "Carmel meeting with Eric Johnson at 10:40–11:00 AM, Table 2 (booked through Rakesh's Brella). Conference closes around 11:30 AM.";
+      sub.textContent = "Conference closes around 11:30 AM. Time to line up follow-ups.";
     } else {
       main.textContent = "LEND360 2026 has wrapped";
       sub.textContent = "Time for follow-ups. Each one-pager has an “After” step in its game plan.";
@@ -1144,6 +1132,13 @@ footer .wrap { display: grid; gap: 6px; }
     if (!b) return;
     state.via = b.getAttribute("data-via");
     store("l360-via", state.via);
+    renderVia(); renderTimeline();
+  });
+  elPrio.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-prio]");
+    if (!b) return;
+    state.prio = b.getAttribute("data-prio");
+    store("l360-prio", state.prio);
     renderVia(); renderTimeline();
   });
   elOfficial.addEventListener("change", function () {
