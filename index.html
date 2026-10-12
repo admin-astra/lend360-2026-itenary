@@ -779,8 +779,8 @@ footer .wrap { display: grid; gap: 6px; }
   var ITEMS = [
     /* Monday */
     { id: "mon-reg", day: "mon", kind: "official", start: "07:30", end: "18:00", ambient: true, title: "Registration desk open", room: "North Foyer · 5th floor" },
-    { id: "island", day: "mon", kind: "meeting", status: "confirmed", start: "08:00", end: "08:30", co: "island", via: ["mickey"], table: "2",
-      notes: ["Set on Brella through Mickey's account; Douglas accepted the meeting request.", "First meeting of the conference, before the formal program starts."],
+    { id: "island", day: "mon", kind: "meeting", status: "confirmed", start: "16:20", end: "16:50", co: "island", via: ["rakesh"], table: "2",
+      notes: ["Set on Brella through Rakesh's account; Douglas accepted the meeting request.", "Runs into the start of the Beyond Austin City Limits reception (4:30 PM, 5th floor)."],
       source: "Cold-calling campaign · Debbie" },
     { id: "mon-ceo", day: "mon", kind: "official", start: "11:00", end: "12:45", onSheet: true, title: "CEO Reception & Luncheon", sub: "Invite only, for CEOs and Presidents. Speaker: Karl Rove.", room: "Park View · 7th floor" },
     { id: "midwest", day: "mon", kind: "meeting", status: "confirmed", start: "13:00", end: "13:30", co: "midwest", via: ["outlook"],
@@ -811,7 +811,7 @@ footer .wrap { display: grid; gap: 6px; }
   ];
 
   var DAY_NOTES = {
-    mon: "Early start: Island Mountain at 8:00 AM, Table 2. The formal program begins at 1:00 PM, and Midwest Fidelity is at the same time.",
+    mon: "The formal program begins at 1:00 PM, the same time as Midwest Fidelity. Island Mountain follows at 4:20 PM, Table 2.",
     tue: "2:40–3:40 PM is three meetings back to back: Monterey at Table 1, EverChain at Table 2, then Uown back at Table 1. End with drinks with Carmel in the evening."
   };
 
@@ -1069,7 +1069,7 @@ footer .wrap { display: grid; gap: 6px; }
     if (t.date < DAYS.mon.date) {
       var n = daysBetween(t.date, DAYS.mon.date);
       main.textContent = "LEND360 starts Monday, Oct 12 · " + (n === 1 ? "tomorrow" : n + " days to go");
-      sub.textContent = conf + " confirmed meetings plus drinks with Carmel (" + green + " high-potential). First up: Island Mountain, Mon 8:00 AM, Table 2.";
+      sub.textContent = conf + " confirmed meetings plus drinks with Carmel (" + green + " high-potential). First up: Midwest Fidelity, Mon 1:00 PM.";
     } else if (t.date === DAYS.mon.date || t.date === DAYS.tue.date) {
       var dk = t.date === DAYS.mon.date ? "mon" : "tue";
       var nn = nowNext(dk);
