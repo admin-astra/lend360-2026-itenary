@@ -296,6 +296,7 @@ main { padding-block: 18px 40px; }
 .chip.rakesh { color: var(--rakesh); background: var(--rakesh-bg); }
 .chip.mickey { color: var(--mickey); background: var(--mickey-bg); }
 .chip.outlook { color: var(--outlook); background: var(--outlook-bg); }
+.chip.learn { color: var(--astra); background: var(--surface-2); }
 .chip.prio-high { color: var(--ok); background: var(--ok-bg); }
 .chip.prio-std { color: var(--warn); background: var(--warn-bg); }
 .pdot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex: none; }
@@ -557,6 +558,11 @@ footer .wrap { display: grid; gap: 6px; }
   var lip = function (q) { return "https://www.linkedin.com/search/results/people/?keywords=" + encodeURIComponent(q); };
 
   var COMPANIES = {
+    fundamento: {
+      name: "Fundamento AI",
+      internal: true,
+      people: [{ n: "Iknoor Kaur", t: "Point of contact", poc: true }]
+    },
     island: {
       name: "Island Mountain Development Group",
       industry: "Tribal lending · online consumer loans",
@@ -779,15 +785,18 @@ footer .wrap { display: grid; gap: 6px; }
   var ITEMS = [
     /* Monday */
     { id: "mon-reg", day: "mon", kind: "official", start: "07:30", end: "18:00", ambient: true, title: "Registration desk open", room: "North Foyer · 5th floor" },
-    { id: "island", day: "mon", kind: "meeting", status: "confirmed", start: "16:20", end: "16:50", co: "island", via: ["rakesh"], table: "2",
+    { id: "island", day: "mon", kind: "meeting", status: "confirmed", start: "16:20", end: "16:50", co: "island", via: ["rakesh"], table: "4",
       notes: ["Set on Brella through Rakesh's account; Douglas accepted the meeting request.", "Runs into the start of the Beyond Austin City Limits reception (4:30 PM, 5th floor)."],
       source: "Cold-calling campaign · Debbie" },
     { id: "mon-ceo", day: "mon", kind: "official", start: "11:00", end: "12:45", onSheet: true, title: "CEO Reception & Luncheon", sub: "Invite only, for CEOs and Presidents. Speaker: Karl Rove.", room: "Park View · 7th floor" },
     { id: "midwest", day: "mon", kind: "meeting", status: "confirmed", start: "13:00", end: "13:30", co: "midwest", via: ["outlook"],
-      notes: ["Calendar invite sent on Outlook and accepted.", "Troy wasn't found on Brella; a Brella meeting request was also sent. No Brella table, so confirm the meeting spot with Troy."],
+      table: "12",
+      notes: ["Calendar invite sent on Outlook and accepted.", "Troy wasn't found on Brella; a Brella meeting request was also sent."],
       source: "LinkedIn campaign · Debbie & Arsh" },
     { id: "mon-key", day: "mon", kind: "official", start: "13:00", end: "13:45", title: "Opening remarks & keynote", sub: "Naftali Harris, CEO of SentiLink, on fighting fraud.", room: "Manchester Ballroom EF · 5th floor" },
     { id: "mon-hall", day: "mon", kind: "official", start: "13:00", end: "18:00", ambient: true, title: "Innovation Hall opens", sub: "Exhibit floor, coffee bar, cornhole, puppy play pen.", room: "Manchester Ballroom ABCD · 5th floor" },
+    { id: "fundamento", day: "mon", kind: "meeting", status: "confirmed", start: "14:00", end: "14:30", co: "fundamento", via: [], table: "19", attendee: "Adit Kumar",
+      notes: ["Not a client meeting. Adit is meeting them on his own to understand their product."] },
     { id: "mon-brk", day: "mon", kind: "official", start: "14:00", end: "15:00", related: "monterey", title: "Breakout: Future-Proofing Lending", sub: "Monterey Financial's Head of Credit, Zhiyao Pei, is on the panel.", room: "Lantana · 4th floor" },
     { id: "mon-rec", day: "mon", kind: "official", start: "16:30", end: "18:00", title: "Beyond Austin City Limits Reception", sub: "Live music, local food and custom cowboy hats.", room: "Manchester Ballroom ABCD · 5th floor" },
 
@@ -811,7 +820,7 @@ footer .wrap { display: grid; gap: 6px; }
   ];
 
   var DAY_NOTES = {
-    mon: "The formal program begins at 1:00 PM, the same time as Midwest Fidelity. Island Mountain follows at 4:20 PM, Table 2.",
+    mon: "The formal program begins at 1:00 PM, the same time as Midwest Fidelity. Adit meets Fundamento AI at 2:00 PM (Table 19), and Island Mountain follows at 4:20 PM (Table 4).",
     tue: "2:40–3:40 PM is three meetings back to back: Monterey at Table 1, EverChain at Table 2, then Uown back at Table 1. End with drinks with Carmel in the evening."
   };
 
@@ -957,7 +966,11 @@ footer .wrap { display: grid; gap: 6px; }
     var poc = c.people.filter(function (p) { return p.poc; })[0];
     var chips = [];
     var pr = PRIORITY[c.priority];
-    chips.push('<span class="chip ' + pr.cls + '"><span class="pdot"></span>' + pr.label + '</span>');
+    if (pr) chips.push('<span class="chip ' + pr.cls + '"><span class="pdot"></span>' + pr.label + '</span>');
+    if (c.internal) {
+      chips.push('<span class="chip learn">Product discovery</span>');
+      chips.push('<span class="chip table">Attending: ' + esc(i.attendee) + '</span>');
+    }
     if (i.status === "social") chips.push('<span class="chip social">' + icon("i-glass") + 'Evening drinks</span>');
     if (i.host) chips.push('<span class="chip ' + VIA[i.host].cls + '">Host: Mickey</span>');
     else i.via.forEach(function (v) { chips.push('<span class="chip ' + VIA[v].cls + '">' + esc(VIA[v].label) + '</span>'); });
@@ -984,15 +997,16 @@ footer .wrap { display: grid; gap: 6px; }
       '<div class="time">' + time + flags.marker + (flags.b2b ? '<span class="marker b2b">Back-to-back</span>' : '') + '</div>' +
       '<article class="card" aria-labelledby="h-' + i.id + '">' +
         '<header class="card-head"><div class="head-main">' +
-          '<h3 id="h-' + i.id + '"><span class="prio-mark ' + c.priority + '" title="' + pr.label + '"></span>' + esc(c.name) + '</h3>' +
+          '<h3 id="h-' + i.id + '">' + (pr ? '<span class="prio-mark ' + c.priority + '" title="' + pr.label + '"></span>' : '') + esc(c.name) + '</h3>' +
           (c.legal ? '<p class="legal">' + esc(c.legal) + '</p>' : '') +
           '<p class="poc">With <strong>' + esc(poc.n) + '</strong> · ' + esc(poc.t) + '</p>' +
         '</div><div class="chips">' + chips.join("") + '</div></header>' +
         (i.quote ? '<p class="quote">' + esc(i.quote) + '</p>' : '') +
         (notes.length ? '<ul class="notes">' + notes.join("") + '</ul>' : '') +
+        (c.internal ? '' :
         '<div class="people"><p class="label">Who\'s coming from ' + esc(c.name.split(" (")[0].split(",")[0]) + ' (' + c.people.length + ')</p><ul>' + people + '</ul>' +
           (c.peopleNote ? '<p class="o-sub" style="margin-top:6px">' + esc(c.peopleNote) + '</p>' : '') + '</div>' +
-        onePagerHTML(c, i.id) +
+        onePagerHTML(c, i.id)) +
       '</article></li>';
   }
 
@@ -1029,7 +1043,7 @@ footer .wrap { display: grid; gap: 6px; }
     var ms = meetingsFor(state.day);
     var conf = ms.filter(function (m) { return m.status === "confirmed"; }).length;
     var g = ms.filter(function (m) { return COMPANIES[m.co].priority === "high"; }).length;
-    var y = ms.length - g;
+    var y = ms.filter(function (m) { return COMPANIES[m.co].priority === "std"; }).length;
     var parts = [conf + " confirmed"];
     if (ms.some(function (m) { return m.status === "social"; })) parts.push("drinks with Carmel");
     parts.push(g + " green, " + y + " yellow");
