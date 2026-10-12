@@ -571,6 +571,7 @@ footer .wrap { display: grid; gap: 6px; }
       founded: "2009, by the Fort Belknap Indian Community Council",
       revenue: "About $130M operating revenue (2020 estimate, reported in 2023); data vendors list about $18M",
       priority: "std",
+      priorityLabel: "Client potential under review",
       website: "islandmtn.com",
       linkedin: li("Island Mountain Development Group"),
       about: "The for-profit economic development corporation of the Fort Belknap Indian Community (Aaniiih and Nakoda tribes) in Montana. More than 90% of its revenue comes from three online lending brands: Bright Lending, Green Trust Cash and Target Cash Now. It faces multistate legal scrutiny, including a Minnesota AG lawsuit, over APRs reported at 474%–795% and over its sovereign-immunity status.",
@@ -789,9 +790,9 @@ footer .wrap { display: grid; gap: 6px; }
       notes: ["Set on Brella through Rakesh's account; Douglas accepted the meeting request.", "Runs into the start of the Beyond Austin City Limits reception (4:30 PM, 5th floor)."],
       source: "Cold-calling campaign · Debbie" },
     { id: "mon-ceo", day: "mon", kind: "official", start: "11:00", end: "12:45", onSheet: true, title: "CEO Reception & Luncheon", sub: "Invite only, for CEOs and Presidents. Speaker: Karl Rove.", room: "Park View · 7th floor" },
-    { id: "midwest", day: "mon", kind: "meeting", status: "confirmed", start: "13:00", end: "13:30", co: "midwest", via: ["outlook"],
+    { id: "midwest", day: "mon", kind: "meeting", status: "confirmed", start: "13:00", end: "13:30", co: "midwest", via: ["rakesh"],
       table: "12",
-      notes: ["Calendar invite sent on Outlook and accepted.", "Troy wasn't found on Brella; a Brella meeting request was also sent."],
+      notes: ["Set on Brella through Rakesh's account. Troy also accepted the Outlook calendar invite."],
       source: "LinkedIn campaign · Debbie & Arsh" },
     { id: "mon-key", day: "mon", kind: "official", start: "13:00", end: "13:45", title: "Opening remarks & keynote", sub: "Naftali Harris, CEO of SentiLink, on fighting fraud.", room: "Manchester Ballroom EF · 5th floor" },
     { id: "mon-hall", day: "mon", kind: "official", start: "13:00", end: "18:00", ambient: true, title: "Innovation Hall opens", sub: "Exhibit floor, coffee bar, cornhole, puppy play pen.", room: "Manchester Ballroom ABCD · 5th floor" },
@@ -966,7 +967,8 @@ footer .wrap { display: grid; gap: 6px; }
     var poc = c.people.filter(function (p) { return p.poc; })[0];
     var chips = [];
     var pr = PRIORITY[c.priority];
-    if (pr) chips.push('<span class="chip ' + pr.cls + '"><span class="pdot"></span>' + pr.label + '</span>');
+    if (pr) pr = { cls: pr.cls, label: c.priorityLabel || pr.label };
+    if (pr) chips.push('<span class="chip ' + pr.cls + '"><span class="pdot"></span>' + esc(pr.label) + '</span>');
     if (c.internal) {
       chips.push('<span class="chip learn">Product discovery</span>');
       chips.push('<span class="chip table">Attending: ' + esc(i.attendee) + '</span>');
